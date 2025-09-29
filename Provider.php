@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\OneID;
+namespace Aslnbxrz\OneID;
 
 use GuzzleHttp\RequestOptions;
 use Laravel\Socialite\Two\User;
