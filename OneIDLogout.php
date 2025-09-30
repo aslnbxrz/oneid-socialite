@@ -32,7 +32,10 @@ final class OneIDLogout
                 'accessTokenOrSessionId' => $accessTokenOrSessionId,
             ]);
         } catch (Throwable $e) {
-            Log::error('OneIDSocialiteThrow', [$e->getMessage()]);
+            Log::error('OneIDSocialiteThrow', [
+                'throw'  => $e->getMessage(),
+                'config' => $this->getConfig(),
+            ]);
         }
     }
 }
