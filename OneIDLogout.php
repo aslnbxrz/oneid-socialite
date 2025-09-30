@@ -2,16 +2,15 @@
 
 namespace Aslnbxrz\OneID;
 
-use Illuminate\Support\Facades\Log;
-use Throwable;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use SocialiteProviders\Manager\ConfigTrait;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class OneIDLogout
 {
-    use ConfigTrait;
-
     public function handle($accessTokenOrSessionId): void
     {
         $client = new Client();
@@ -33,9 +32,26 @@ final class OneIDLogout
             ]);
         } catch (Throwable $e) {
             Log::error('OneIDSocialiteThrow', [
-                'throw'  => $e->getMessage(),
+                'throw' => $e->getMessage(),
                 'config' => $this->getConfig(),
             ]);
         }
+    }
+
+    /**
+     * @param string|null $key
+     * @param mixed|null $default
+     * @return mixed|array
+     */
+    protected function getConfig(?string $key = null, mixed $default = null): mixed
+    {
+        $config = Config::get('services.oneid');
+        // check manually if a key is given and if it exists in the config
+        // this has to be done to check for spoofed additional config keys so that null isn't returned
+        if (!empty($key) && empty($config[$key])) {
+            return $default;
+        }
+
+        return $key ? Arr::get($config, $key, $default) : $config;
     }
 }
