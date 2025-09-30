@@ -2,6 +2,7 @@
 
 namespace Aslnbxrz\OneID;
 
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -25,6 +26,8 @@ final class OneIDLogout
                 ],
                 'headers' => ['Accept' => 'application/json'],
             ]);
-        } catch (Throwable) {}
+        } catch (Throwable $e) {
+            Log::error('OneIDSocialiteThrow', [$e->getMessage()]);
+        }
     }
 }
