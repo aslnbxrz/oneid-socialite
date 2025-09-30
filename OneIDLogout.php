@@ -16,7 +16,7 @@ final class OneIDLogout
     {
         $client = new Client();
         try {
-            $client->post(rtrim($this->getConfig('base_url', 'https://sso.egov.uz'), '/') . '/sso/oauth/Authorization.do', [
+            $res = $client->post(rtrim($this->getConfig('base_url', 'https://sso.egov.uz'), '/') . '/sso/oauth/Authorization.do', [
                 RequestOptions::FORM_PARAMS => [
                     'grant_type' => 'one_log_out',
                     'client_id' => $this->getConfig('client_id'),
@@ -25,6 +25,11 @@ final class OneIDLogout
                     'scope' => $this->getConfig('scope', 'one_code'),
                 ],
                 'headers' => ['Accept' => 'application/json'],
+            ]);
+            Log::info('OneIDSocialiteLogout', [
+                'status_code' => $res->getStatusCode(),
+                'res' => $res->getBody()->getContents(),
+                'accessTokenOrSessionId' => $accessTokenOrSessionId,
             ]);
         } catch (Throwable $e) {
             Log::error('OneIDSocialiteThrow', [$e->getMessage()]);
