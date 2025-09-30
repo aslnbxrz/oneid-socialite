@@ -4,14 +4,11 @@ namespace Aslnbxrz\OneID;
 
 use GuzzleHttp\RequestOptions;
 use Laravel\Socialite\Two\User;
-use SocialiteProviders\Manager\ConfigTrait;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User as OAuth2User;
 
 class Provider extends AbstractProvider
 {
-    use ConfigTrait;
-
     public const IDENTIFIER = 'ONEID';
 
     protected string $scope = 'one_code';
