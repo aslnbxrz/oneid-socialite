@@ -3,9 +3,7 @@
 namespace Aslnbxrz\OneID;
 
 use GuzzleHttp\RequestOptions;
-use Laravel\Socialite\Two\User;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
-use SocialiteProviders\Manager\OAuth2\User as OAuth2User;
 
 class Provider extends AbstractProvider
 {
@@ -55,16 +53,27 @@ class Provider extends AbstractProvider
         return $fields;
     }
 
-    protected function mapUserToObject(array $user): User|OAuth2User
+    protected function mapUserToObject(array $user): OneIDUser
     {
-        $name = $user['full_name'] ?? trim(($user['first_name'] ?? '') . ' ' . ($user['sur_name'] ?? '') . ' ' . ($user['mid_name'] ?? ''));
+        // Build fallback name if full_name is missing
+        $name = $user['full_name'] ?? trim(implode(' ', array_filter([
+            $user['first_name'] ?? null,
+            $user['sur_name'] ?? null,
+            $user['mid_name'] ?? null,
+        ])));
 
-        return (new OAuth2User())->setRaw($user)->map([
+        return (new OneIDUser())->setRaw($user)->map([
+            // Standard Socialite fields
             'id' => $user['user_id'] ?? $user['pin'] ?? $user['sess_id'] ?? null,
-            'nickname' => $user['user_id'] ?? null,
             'name' => $name ?: null,
             'email' => $user['email'] ?? null,
-            'avatar' => null,
+            'avatar' => $user['avatar'] ?? null,
+
+            // Custom fields (use consistent keys!)
+            'pinfl' => $user['pin'] ?? null,                      // citizen PIN/INN
+            'sess_id' => $user['sess_id'] ?? null,                      // OneID session id
+            'passport' => $user['pport_no'] ?? null,                      // passport number
+            'phone' => $user['mob_phone_no'] ?? $user['phone'] ?? null, // prefer mob_phone_no
         ]);
     }
 
