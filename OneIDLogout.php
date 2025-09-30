@@ -11,7 +11,7 @@ final class OneIDLogout
 {
     use ConfigTrait;
 
-    public function __invoke($accessTokenOrSessionId): void
+    public function handle($accessTokenOrSessionId): void
     {
         $client = new Client();
         try {
