@@ -62,6 +62,8 @@ class Provider extends AbstractProvider
             $user['mid_name'] ?? null,
         ])));
 
+        $rawUser = $user;
+
         $legalEntities = [];
         foreach ($user['legal_info'] as $entity) {
             $legalEntities[] = new OneIDUserLegalEntity(
@@ -86,7 +88,8 @@ class Provider extends AbstractProvider
             'passport' => $user['pport_no'] ?? null,                    // passport number
             'phone' => $user['mob_phone_no'] ?? $user['phone'] ?? null, // prefer mob_phone_no
             'legal_info' => $legalEntities, // user legal entities if exists | item (is_basic = true) => selected entity
-            'legal_info_raw' => $user['legal_info']
+            'legal_info_raw' => $user['legal_info'],
+            'user_raw' => $rawUser
         ]);
     }
 
