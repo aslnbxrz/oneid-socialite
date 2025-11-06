@@ -62,6 +62,17 @@ class Provider extends AbstractProvider
             $user['mid_name'] ?? null,
         ])));
 
+        $legalEntities = [];
+        foreach ($user['legal_info'] as $entity) {
+            $legalEntities[] = new OneIDUserLegalEntity(
+                isBasic: (bool)($entity['is_basic'] ?? false),
+                tin: (string)($entity['tin'] ?? ''),
+                acronUz: (string)($entity['acron_UZ'] ?? ''),
+                leTin: (string)($entity['le_tin'] ?? ''),
+                leName: (string)($entity['le_name'] ?? ''),
+            );
+        }
+
         return (new OneIDUser())->setRaw($user)->map([
             // Standard Socialite fields
             'id' => $user['user_id'] ?? $user['pin'] ?? $user['sess_id'] ?? null,
@@ -70,10 +81,11 @@ class Provider extends AbstractProvider
             'avatar' => $user['avatar'] ?? null,
 
             // Custom fields (use consistent keys!)
-            'pinfl' => $user['pin'] ?? null,                      // citizen PIN/INN
+            'pinfl' => $user['pin'] ?? null,                            // citizen PIN/INN
             'sess_id' => $user['sess_id'] ?? null,                      // OneID session id
-            'passport' => $user['pport_no'] ?? null,                      // passport number
+            'passport' => $user['pport_no'] ?? null,                    // passport number
             'phone' => $user['mob_phone_no'] ?? $user['phone'] ?? null, // prefer mob_phone_no
+            'legal_info' => $legalEntities // user legal entities if exists | item (is_basic = true) => selected entity
         ]);
     }
 

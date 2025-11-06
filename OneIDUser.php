@@ -40,4 +40,25 @@ class OneIDUser extends OAuth2User
         // Odd => male, Even => female
         return ((int)$pin[0]) % 2 ? 'male' : 'female';
     }
+
+    /**
+     * @return array<OneIDUserLegalEntity>
+     */
+    public function getLegalEntities(): array
+    {
+        return $this->attributes['legal_entity'] ?? [];
+    }
+
+    /**
+     * Return first legal entity where is_basic = true
+     */
+    public function getSelectedEntity(): ?OneIDUserLegalEntity
+    {
+        foreach ($this->getLegalEntities() as $entity) {
+            if ($entity->isSelected()) {
+                return $entity;
+            }
+        }
+        return null;
+    }
 }
