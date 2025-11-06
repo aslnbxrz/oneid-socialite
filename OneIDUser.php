@@ -44,9 +44,17 @@ class OneIDUser extends OAuth2User
     /**
      * @return array<OneIDUserLegalEntity>
      */
-    public function getLegalEntities(): array
+    public function getLegalInfo(): array
     {
         return $this->attributes['legal_info'] ?? [];
+    }
+
+    /**
+     * @return array<OneIDUserLegalEntity>
+     */
+    public function getLegalInfoRaw(): array
+    {
+        return $this->attributes['legal_info_raw'] ?? [];
     }
 
     /**
@@ -54,7 +62,7 @@ class OneIDUser extends OAuth2User
      */
     public function getSelectedEntity(): ?OneIDUserLegalEntity
     {
-        foreach ($this->getLegalEntities() as $entity) {
+        foreach ($this->getLegalInfo() as $entity) {
             if ($entity->isSelected()) {
                 return $entity;
             }
