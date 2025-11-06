@@ -46,7 +46,7 @@ class OneIDUser extends OAuth2User
      */
     public function getLegalEntities(): array
     {
-        return $this->attributes['legal_entity'] ?? [];
+        return $this->attributes['legal_info'] ?? [];
     }
 
     /**
