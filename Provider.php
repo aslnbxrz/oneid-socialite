@@ -64,7 +64,7 @@ class Provider extends AbstractProvider
 
         $legalEntities = [];
         foreach ($user['legal_info'] as $entity) {
-            $legalEntities[] += new OneIDUserLegalEntity(
+            $legalEntities[] = new OneIDUserLegalEntity(
                 isBasic: (bool)($entity['is_basic'] ?? false),
                 tin: (string)($entity['tin'] ?? ''),
                 acronUz: (string)($entity['acron_UZ'] ?? ''),
