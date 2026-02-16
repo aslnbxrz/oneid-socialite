@@ -153,15 +153,20 @@ Route::post('/api/auth/oneid/code', function (Request $request) {
 ## OneID Logout
 
 In addition to logging out locally (revoking your Laravel session or API token), you may also notify OneID to invalidate
-the session on their side. This is **REQUIRED** and should be done **after** your database transaction commits.
+the session on their side.
 
 ### Usage
 
 ```php
-use Aslnbxrz\OneID\OneIDLogout;
+use GuzzleHttp\Exception\GuzzleException;
+use Laravel\Socialite\Facades\Socialite;
 
 // $accessTokenOrSessionId - access_token or sess_id
-$success = app(OneIDLogout::class)->handle($accessTokenOrSessionId);
+try {
+    Socialite::driver('oneid')->logout($accessTokenOrSessionId);
+} catch (GuzzleException $e) {
+    // Handle OneID logout request error
+}
 ```
 
 ## Endpoints
