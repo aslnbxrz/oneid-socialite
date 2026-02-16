@@ -35,7 +35,7 @@ class OneIDUser extends OAuth2User
     {
         $pin = $this->getPinfl();
         if (empty($pin) || !ctype_digit($pin)) {
-            return null; // or 'unknown'
+            return null;
         }
         // Odd => male, Even => female
         return ((int)$pin[0]) % 2 ? 'male' : 'female';

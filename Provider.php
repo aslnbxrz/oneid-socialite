@@ -2,6 +2,7 @@
 
 namespace Aslnbxrz\OneID;
 
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 
@@ -10,6 +11,27 @@ class Provider extends AbstractProvider
     public const IDENTIFIER = 'ONEID';
 
     protected string $scope = 'one_code';
+
+    /**
+     * @throws GuzzleException
+     */
+    public function logout(string $accessTokenOrSessionId): void
+    {
+        $this->getHttpClient()->post($this->getBaseUrl() . '/sso/oauth/Authorization.do', [
+            RequestOptions::FORM_PARAMS => [
+                'grant_type'    => 'one_log_out',
+                'client_id'     => $this->getConfig('client_id'),
+                'client_secret' => $this->getConfig('client_secret'),
+                'access_token'  => $accessTokenOrSessionId,
+                'scope'         => $this->getConfig('scope', 'one_code'),
+            ],
+        ]);
+    }
+
+    protected function getBaseUrl(): string
+    {
+        return rtrim((string) $this->getConfig('base_url', 'https://sso.egov.uz'), '/');
+    }
 
     protected function getAuthUrl($state): string
     {
@@ -21,6 +43,9 @@ class Provider extends AbstractProvider
         return rtrim($this->getBaseUrl(), '/') . '/sso/oauth/Authorization.do';
     }
 
+    /**
+     * @throws GuzzleException
+     */
     protected function getUserByToken($token)
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
@@ -30,8 +55,7 @@ class Provider extends AbstractProvider
                 'client_secret' => $this->clientSecret,
                 'access_token' => $token,
                 'scope' => $this->getScope(),
-            ],
-            'headers' => ['Accept' => 'application/json'],
+            ]
         ]);
 
         return json_decode($response->getBody()->getContents(), true);
@@ -55,7 +79,6 @@ class Provider extends AbstractProvider
 
     protected function mapUserToObject(array $user): OneIDUser
     {
-        // Build fallback name if full_name is missing
         $name = $user['full_name'] ?? trim(implode(' ', array_filter([
             $user['first_name'] ?? null,
             $user['sur_name'] ?? null,
@@ -89,15 +112,8 @@ class Provider extends AbstractProvider
         ]);
     }
 
-    protected function getBaseUrl(): string
-    {
-        return $this->getConfig('base_url', 'https://sso.egov.uz');
-    }
-
     protected function getScope(): string
     {
         return (string)($this->getConfig('scope', $this->scope));
     }
 }
-
-
